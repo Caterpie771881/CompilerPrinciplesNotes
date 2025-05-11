@@ -49,6 +49,37 @@
 
 3. 直接解释抽象语法树, 将 AST 转换为 NFA 的 NFABuilder
 
+## 使用例
+
+`SimpleRegexEngine` 提供了一些常用的 API
+
+```python
+import SimpleRegexEngine as sre
+
+regex = r"a(b|c)*"
+
+print(sre.match(regex, "abbcc"))            # True
+print(sre.find(regex, "123abc456"))         # 'abc'
+print(sre.findall(regex, "ab_ac_abc"))      # ['ab', 'ac', 'abc']
+print(sre.sub(regex, '123abc456', 'hello')) # '123hello456'
+```
+
+`SimpleRegexEngine` 构建的 NFA 和 DFA 都能以五元组的形式输出
+
+```python
+import SimpleRegexEngine as sre
+
+regex = r"a(b|c)"
+
+dfa = sre.compile(regex)
+print(dfa)
+# S: {0, 1, 2}
+# ∑: {'a', 'b', 'c'}
+# s0: 0
+# F: {2}
+# M: {0: {'a': 1}, 1: {'c': 2, 'b': 2}, 2: {}}
+```
+
 ## TODO
 
 - [ ] 完成 DFA 的 find 方法

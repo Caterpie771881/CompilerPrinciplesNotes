@@ -51,9 +51,9 @@
 
 ## TODO
 
-- [] 完成 DFA 的 find 方法
-- [] 完成 DFA 的 findall 方法
-- [] 完成 DFA 的 split 方法
-- [] 完成 DFA 的 sub 方法
-- [] 添加懒惰模式的运算符
-- [] 添加使用文档
+- [ ] 完成 DFA 的 find 方法
+- [ ] 完成 DFA 的 findall 方法
+- [ ] 完成 DFA 的 split 方法
+- [ ] 完成 DFA 的 sub 方法
+- [ ] 添加懒惰模式的运算符
+- [ ] 添加使用文档

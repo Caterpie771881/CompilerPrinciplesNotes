@@ -52,13 +52,15 @@ def subset_construction(nfa: NFA) -> DFA:
 def hopcroft(dfa: DFA) -> DFA:
     from .dfa import Node
 
-    def split(s: set[Node], conds: set[fa_condition], total_sets: set[Node]) -> list[set[Node]]:
+    def split(s: set[Node], conds: set[fa_condition], total_sets: list[set[Node]]) -> list[set[Node]]:
         for c in conds:
             goto: dict[int, set[Node]] = {}
             for n in s:
                 next_node = n[c]
-                if next_node is None or next_node in s:
+                if next_node is None:
                     i = -1
+                elif next_node in s:
+                    i = -2
                 else:
                     for i in range(len(total_sets)):
                         if next_node in total_sets[i]:

@@ -58,7 +58,7 @@ import SimpleRegexEngine as sre
 
 regex = r"a(b|c)*"
 
-print(sre.match(regex, "abbcc"))            # True
+print(sre.match(regex, "abbcc"))            # 'abbcc'
 print(sre.find(regex, "123abc456"))         # 'abc'
 print(sre.findall(regex, "ab_ac_abc"))      # ['ab', 'ac', 'abc']
 print(sre.sub(regex, '123abc456', 'hello')) # '123hello456'

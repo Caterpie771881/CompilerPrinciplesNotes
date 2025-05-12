@@ -32,13 +32,17 @@ class DFA():
         ft = dfa2fivetuple(self)
         return "\n".join(f"{i}: {ft[i]}" for i in ft)
     
-    def match(self, string: str) -> bool:
+    def match(self, string: str) -> str:
         node = self.head
+        current = rem = ''
         for char in string:
+            current += char
             node = node[char]
             if not node:
-                return False
-        return node.end
+                return rem
+            if node.end:
+                rem = current
+        return rem
 
     # TODO
     def find(self, string: str) -> Union[str, None]:

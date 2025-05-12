@@ -52,6 +52,45 @@ def subset_construction(nfa: NFA) -> DFA:
 def hopcroft(dfa: DFA) -> DFA:
     from .dfa import Node
 
+    def split(s: set[Node], conds: set[fa_condition], total_sets: set[Node]) -> list[set[Node]]:
+        for c in conds:
+            goto: dict[int, set[Node]] = {}
+            for n in s:
+                next_node = n[c]
+                if next_node is None or next_node in s:
+                    i = -1
+                else:
+                    for i in range(len(total_sets)):
+                        if next_node in total_sets[i]:
+                            break
+                if i not in goto:
+                    goto[i] = set()
+                goto[i].add(n)
+            if len(goto) - 1:
+                new_sets = list(goto.values())
+                return new_sets
+        return []
+    
+    def rebuild_dfa(total_sets: list[set[Node]]) -> DFA:
+        head : Node            = None
+        nodes: list[Node]      = []
+        n2s  : dict[Node, int] = {}
+        for i in range(len(total_sets)):
+            s = total_sets[i]
+            for n in s:
+                n2s[n] = i
+            new_node = Node(end=n.end)
+            nodes.append(new_node)
+            if not head and dfa.head in s:
+                head = new_node
+        for n in n2s:
+            new_node = nodes[n2s[n]]
+            for cond in n:
+                old_next_node = n[cond]
+                new_next_node = nodes[n2s[old_next_node]]
+                new_node[cond] = new_next_node
+        return DFA(head=head)
+
     total_states: set[Node]         = {dfa.head}
     end_set     : set[Node]         = set()
     notend_set  : set[Node]         = set()
@@ -73,46 +112,14 @@ def hopcroft(dfa: DFA) -> DFA:
             total_states.add(next_node)
             queue.append(next_node)
 
+    # try to split all sets util can not split any set
     tosplit: list[set[Node]] = [end_set, notend_set]
     while len(tosplit):
         s = tosplit.pop()
-        for c in conds:
-            goto: dict[int, set[Node]] = {}
-            for n in s:
-                next_node = n[c]
-                if next_node is None or next_node in s:
-                    i = -1
-                else:
-                    for i in range(len(total_sets)):
-                        if next_node in total_sets[i]:
-                            break
-                if i not in goto:
-                    goto[i] = set()
-                goto[i].add(n)
-            if len(goto) - 1:
-                new_sets = list(goto.values())
-                total_sets.remove(s)
-                total_sets += new_sets
-                tosplit += new_sets
-                break
+        new_sets = split(s, conds, total_sets)
+        if new_sets:
+            total_sets.remove(s)
+            total_sets += new_sets
+            tosplit += new_sets
 
-    head : Node            = None
-    nodes: list[Node]      = []
-    n2s  : dict[Node, int] = {}
-
-    for i in range(len(total_sets)):
-        s = total_sets[i]
-        for n in s:
-            n2s[n] = i
-        nodes.append(Node(end=n.end))
-        if dfa.head in s:
-            head = nodes[i]
-    
-    for n in n2s:
-        new_node = nodes[n2s[n]]
-        for cond in n:
-            old_next_node = n[cond]
-            new_next_node = nodes[n2s[old_next_node]]
-            new_node[cond] = new_next_node
-    
-    return DFA(head=head)
+    return rebuild_dfa(total_sets)

@@ -30,7 +30,7 @@ class DFA():
     
     def __repr__(self) -> str:
         ft = dfa2fivetuple(self)
-        return f"S: {ft['S']}\n∑: {ft['∑']}\ns0: {ft['s0']}\nF: {ft['F']}\nM: {ft['M']}"
+        return "\n".join(f"{i}: {ft[i]}" for i in ft)
     
     def match(self, string: str) -> bool:
         node = self.head
@@ -57,7 +57,7 @@ class DFA():
         raise Exception("todo")
 
 
-def dfa2fivetuple(dfa: DFA) -> str:
+def dfa2fivetuple(dfa: DFA) -> dict:
     total: dict[Node, int] = {dfa.head: 0}
     transition_map: dict[int, dict[str, Union[Node, int]]] = {}
     conds: set[str] = set()
@@ -67,7 +67,7 @@ def dfa2fivetuple(dfa: DFA) -> str:
         node = queue.pop()
         transition_map[total[node]] = {}
         for cond in node:
-            c = '<any>' if cond is ANY else cond
+            c = str(cond)
             conds.add(c)
             next_node = node[cond]
             transition_map[total[node]][c] = next_node

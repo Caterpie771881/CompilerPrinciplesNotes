@@ -42,7 +42,7 @@ class NFA():
     
     def __repr__(self) -> str:
         ft = nfa2fivetuple(self)
-        return f"S: {ft['S']}\n∑: {ft['∑']}\ns0: {ft['s0']}\nF: {ft['F']}\nM: {ft['M']}"
+        return "\n".join(f"{i}: {ft[i]}" for i in ft)
     
     @classmethod
     def singlechar(cls, char: str) -> "NFA":
@@ -133,7 +133,7 @@ class NFA():
         return NFA(head=s0, tail=s2)
 
 
-def nfa2fivetuple(nfa: NFA) -> str:
+def nfa2fivetuple(nfa: NFA) -> dict:
     total: dict[Node, int] = {nfa.head: 0, nfa.tail: 1}
     transition_map: dict[int, dict[str, list]] = {}
     conds: set[str] = set()
@@ -143,7 +143,7 @@ def nfa2fivetuple(nfa: NFA) -> str:
         node = queue.pop()
         transition_map[total[node]] = {}
         for cond in node:
-            c = '<any>' if cond is ANY else cond
+            c = str(cond)
             conds.add(c)
             transition_map[total[node]][c] = []
             for next_node in node[cond]:

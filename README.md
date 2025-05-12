@@ -10,10 +10,10 @@
 
 |工程|介绍|
 |--|--|
-|SimleRegexEngine|基于DFA的正则引擎|
-|ezLexer|基于正则表达式的词法分析器|
-|SimpleParsers|语法分析器合集|
-|ezVM|一个栈式虚拟机|
+|[SimleRegexEngine](./SimpleParsers/)|基于DFA的正则引擎|
+|[ezLexer](./ezLexer/)|基于正则表达式的词法分析器|
+|[SimpleParsers](./SimpleParsers/)|语法分析器合集|
+|[ezVM](./ezVM/)|一个栈式虚拟机|
 
 ## 参考资料
 

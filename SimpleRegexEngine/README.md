@@ -61,7 +61,8 @@ regex = r"a(b|c)*"
 print(sre.match(regex, "abbcc"))            # 'abbcc'
 print(sre.find(regex, "123abc456"))         # 'abc'
 print(sre.findall(regex, "ab_ac_abc"))      # ['ab', 'ac', 'abc']
-print(sre.sub(regex, '123abc456', 'hello')) # '123hello456'
+print(sre.sub(regex, 'hello', '123abc456')) # '123hello456'
+print(sre.split(regex, '123abc456'))        # ['123', '456']
 ```
 
 `SimpleRegexEngine` 构建的 NFA 和 DFA 都能以五元组的形式输出
@@ -82,9 +83,5 @@ print(dfa)
 
 ## TODO
 
-- [ ] 完成 DFA 的 find 方法
-- [ ] 完成 DFA 的 findall 方法
-- [ ] 完成 DFA 的 split 方法
-- [ ] 完成 DFA 的 sub 方法
 - [ ] 添加懒惰模式的运算符
 - [ ] 添加使用文档

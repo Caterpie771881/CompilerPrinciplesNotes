@@ -14,9 +14,18 @@ def findall(regex: str, string: str) -> list[str]:
     return compile(regex).findall(string)
     
 
-def split(regex: str, string: str) -> list[str]:
-    return compile(regex).split(string)
+def split(
+        regex: str,
+        string: str,
+        maxsplit: int = 0
+    ) -> list[str]:
+    return compile(regex).split(string, maxsplit)
 
 
-def sub(regex: str, string: str, repl: str) -> str:
-    return compile(regex).sub(string, repl)
+def sub(
+        regex: str,
+        repl: str,
+        string: str,
+        count: int = 0
+    ) -> str:
+    return compile(regex).sub(repl, string, count)

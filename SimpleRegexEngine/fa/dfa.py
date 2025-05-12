@@ -44,21 +44,59 @@ class DFA():
                 rem = current
         return rem
 
-    # TODO
     def find(self, string: str) -> Union[str, None]:
-        raise Exception("todo")
+        for i in range(len(string)):
+            m = self.match(string[i:])
+            if m: return m
+        return None
     
-    # TODO
     def findall(self, string: str) -> list[str]:
-        raise Exception("todo")
+        result = []
+        i = 0
+        while i < len(string):
+            m = self.match(string[i:])
+            if m:
+                result.append(m)
+                i += len(m)
+            else:
+                i += 1
+        return result
     
-    # TODO
-    def split(self, string: str) -> list[str]:
-        raise Exception("todo")
+    def split(self, string: str, maxsplit: int = 0) -> list[str]:
+        if maxsplit < 0:
+            return [string]
+        result = []
+        fp = bp = 0
+        while bp < len(string):
+            m = self.match(string[bp:])
+            if m:
+                result.append(string[fp: bp])
+                bp += len(m)
+                fp = bp
+                if maxsplit and len(result) >= maxsplit:
+                    break
+            else:
+                bp += 1
+        result.append(string[fp:])
+        return result
     
-    # TODO
-    def sub(self, string: str, repl: str) -> str:
-        raise Exception("todo")
+    def sub(self, repl: str, string: str, count: int = 0) -> str:
+        if count < 0:
+            return string
+        result = ''
+        fp = bp = c = 0
+        while bp < len(string):
+            m = self.match(string[bp:])
+            if m:
+                result += string[fp: bp] + repl
+                bp += len(m)
+                fp = bp
+                c += 1
+                if count and c >= count:
+                    break
+            else:
+                bp += 1
+        return result + string[fp:]
 
 
 def dfa2fivetuple(dfa: DFA) -> dict:

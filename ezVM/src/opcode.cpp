@@ -2,15 +2,19 @@
 #include <map>
 #include <sstream>
 #include "utils.h"
+#include <iostream>
+
+using namespace code;
 
 Definition::Definition(std::string name, std::vector<int> opWidths)
     : Name(name), OperandWidths(opWidths) {}
 
 std::map<Opcode, Definition> definitions = {
-    {OpConstant, Definition("OpConstant", std::vector<int>{2})},
+    {OpConstant, Definition("OpConstant", {2})},
+    {OpAdd, Definition("OpAdd", {})},
 };
 
-Definition Lookup(Opcode op)
+Definition code::Lookup(Opcode op)
 {
     try
     {
@@ -19,12 +23,13 @@ Definition Lookup(Opcode op)
     catch (const std::exception &e)
     {
         std::stringstream err;
-        err << "opcode " << op << " undefined";
+        err << "opcode '" << std::to_string(op) << "' undefined";
+        std::cerr << err.str() << std::endl;
         throw err.str();
     }
 }
 
-std::vector<uint8_t> Make(Opcode op, const std::vector<int> &operands)
+std::vector<uint8_t> code::Make(Opcode op, const std::vector<int> &operands)
 {
     Definition def = Lookup(op);
     int instructionLen = 1;
@@ -52,7 +57,7 @@ std::vector<uint8_t> Make(Opcode op, const std::vector<int> &operands)
     return instruction;
 }
 
-std::tuple<std::vector<int>, int> ReadOperands(const Definition &def, const Instructions &ins)
+std::tuple<std::vector<int>, int> code::ReadOperands(const Definition &def, const Instructions &ins, size_t index = 0)
 {
     std::vector<int> operands(def.OperandWidths.size(), 0);
     int offset = 0;
@@ -63,7 +68,7 @@ std::tuple<std::vector<int>, int> ReadOperands(const Definition &def, const Inst
         switch (width)
         {
         case 2:
-            operands[i] = (int)ReadUint16(ins, i);
+            operands[i] = (int)ReadUint16(ins, offset + index);
             break;
         }
         offset += width;

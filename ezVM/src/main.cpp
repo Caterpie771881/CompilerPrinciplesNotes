@@ -7,15 +7,8 @@ void checkStackTop(VM &vm, size_t deep = 1)
 {
     for (size_t i = 0; i < deep; i++)
     {
-        obj::Object *o = vm.StackTop();
-        if (o)
-            std::cout << "["
-                      << o->Type()
-                      << " '"
-                      << o->Inspect()
-                      << "']"
-                      << std::endl;
-        else
+        obj::Object *o = vm.Pop();
+        if (!o)
             break;
     }
 }
@@ -36,7 +29,8 @@ int main(int argc, char *argv[])
         std::cout << "============ RUN =============" << std::endl;
         vm.Run();
         std::cout << "============ END =============" << std::endl;
-        checkStackTop(vm);
+        checkStackTop(vm, 5);
+        delete bytecode;
     }
     return 0;
 }

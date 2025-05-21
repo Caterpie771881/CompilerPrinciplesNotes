@@ -26,6 +26,8 @@ void VM::Run()
         code::Opcode op = instructions[ip];
         switch (op)
         {
+        case code::OpNop:
+            break;
         case code::OpConstant:
         {
             std::cout << "doing constant" << std::endl;
@@ -39,15 +41,24 @@ void VM::Run()
             std::cout << "doing add" << std::endl;
             auto right = this->Pop();
             auto left = this->Pop();
-            auto result = right->_add_(left);
+            auto result = left->Add(right);
+            // delete left; delete right;
             if (result)
                 this->Push(result);
             else
                 return;
             break;
         }
+        case code::OpPop:
+        {
+            this->Pop();
+            // delete this->Pop();
+            break;
+        }
         case code::OpEnd:
             return;
+        default:
+            std::cerr << "unknown opcode: " << std::to_string(op) << std::endl;
         }
     }
 }
@@ -64,9 +75,12 @@ void VM::Push(obj::Object *o)
 
 obj::Object *VM::Pop()
 {
-    obj::Object *o = stack[sp - 1];
+    obj::Object *o = this->StackTop();
+    std::string inspect = "[NOTHING '']";
+    if (o)
+        inspect = "[" + o->Type() + " " + o->Inspect() + "]";
     std::cout << "sp: " << std::to_string(sp)
-              << "; will pop: " << o->Inspect() << std::endl;
+              << "; will pop: " << inspect << std::endl;
     sp--;
     return o;
 }

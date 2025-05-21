@@ -43,12 +43,16 @@ Bytecode *Loader::Load()
     std::vector<obj::Object *> Constants(0);
     if (header.constants > 0)
     {
-        obj::ObjectPool pool(header.constants);
+        obj::ConstsPool pool(header.constants);
         file.read(reinterpret_cast<char *>(&pool[0]), header.constants);
         std::cout << "loading constants..." << std::endl;
         for (size_t i = 0; i < pool.size(); i++)
         {
-            // load constant pool
+            auto [newObject, offset] = obj::ReadConst(pool, i);
+            if (!newObject)
+                return nullptr;
+            Constants.push_back(newObject);
+            i += offset;
         }
     }
     // load instructions
@@ -66,9 +70,5 @@ Bytecode *Loader::Load()
         return nullptr;
     }
 
-    return new Bytecode{Instructions, {
-                                          new obj::Integer(1),
-                                          new obj::Integer(2),
-                                          new obj::Integer(65535),
-                                      }};
+    return new Bytecode{Instructions, Constants};
 }

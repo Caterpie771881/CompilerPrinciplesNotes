@@ -10,7 +10,7 @@ set(INCLUDE_DIR "include")
 
 include_directories(${INCLUDE_DIR})
 
-file(GLOB SOURCE_FILES "${SOURCE_DIR}/*.cpp")
+file(GLOB_RECURSE SOURCE_FILES "${SOURCE_DIR}/*.cpp")
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 

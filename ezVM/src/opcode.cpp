@@ -9,7 +9,7 @@ using namespace code;
 Definition::Definition(std::string name, std::vector<int> opWidths)
     : Name(name), OperandWidths(opWidths) {}
 
-std::map<Opcode, Definition> definitions = {
+std::map<Opcode, Definition> constdef = {
     {OpConstant, Definition("OpConstant", {2})},
     {OpAdd, Definition("OpAdd", {})},
 };
@@ -18,7 +18,7 @@ Definition code::Lookup(Opcode op)
 {
     try
     {
-        return definitions.at(op);
+        return constdef.at(op);
     }
     catch (const std::exception &e)
     {

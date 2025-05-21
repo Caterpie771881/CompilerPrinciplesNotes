@@ -9,7 +9,7 @@
 namespace obj
 {
     typedef std::string ObjectType;
-    typedef std::vector<uint8_t> ObjectPool;
+    typedef std::vector<uint8_t> ConstsPool;
 
     enum ObjectTypeEnum
     {
@@ -33,9 +33,14 @@ namespace obj
         virtual ObjectType Type() const = 0;
         virtual std::string Inspect() const = 0;
         virtual ~Object() = default;
-        virtual Object *_add_(Object *);
-        // virtual Object *_eq_(Object *);
-        // virtual Object *_gt_(Object *);
+        virtual Object *Add(Object *);
+        virtual Object *Sub(Object *);
+        virtual Object *Mul(Object *);
+        virtual Object *Div(Object *);
+        // virtual Bool *Eq(Object *);
+        // virtual Bool *Gt(Object *);
+    private:
+        virtual void UnsupportOperateError(const std::string &);
     };
 
     class Integer : public Object
@@ -45,7 +50,10 @@ namespace obj
         std::string Inspect() const override;
         long long value;
         Integer(long long);
-        Integer *_add_(Object *) override;
+        Integer *Add(Object *) override;
+        Integer *Sub(Object *) override;
+        Integer *Mul(Object *) override;
+        Integer *Div(Object *) override;
     };
 
     class Bool : public Object
@@ -66,7 +74,7 @@ namespace obj
         std::string Inspect() const override;
         None();
     };
-    const None none = None();
+    const None _None = None();
 
     class String : public Object
     {
@@ -76,10 +84,12 @@ namespace obj
         String();
         String(std::string);
         std::string value;
-        String *_add_(Object *) override;
+        String *Add(Object *) override;
     };
 
-    std::tuple<Object *, int> ReadObject(uint8_t, ObjectPool);
+    ObjectTypeEnum LookupConst(uint8_t);
+
+    std::tuple<Object *, int> ReadConst(ConstsPool, size_t);
 } // namespace obj
 
 #endif

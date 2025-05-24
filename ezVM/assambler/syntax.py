@@ -55,6 +55,7 @@ class Opcode(StrEnum):
     POP     = auto()
     EXIT    = auto()
     INT     = auto()
+    STRING  = auto()
 
 
 class Operand(StrEnum):
@@ -75,18 +76,20 @@ OpcodeDef(Opcode.ADD,   r"add",     b'\x02', 0)
 OpcodeDef(Opcode.POP,   r"pop",     b'\x03', 0)
 OpcodeDef(Opcode.EXIT,  r"exit",    b'\xff', 0)
 OpcodeDef(Opcode.INT,   r"\.int",   b'\x01', 1)
+OpcodeDef(Opcode.STRING,r"\.string",b'\x02', 1)
 OpcodeRule: AsmRule = OpcodeDef.export_rule()
 
 OperandRule: AsmRule = AsmRule({
     Operand.INT     : r"\d+",
     Operand.HEX     : r"0x[\da-fA-F]+",
     Operand.STRING  : r"'.*?'|\".*?\"",
-    Operand.LABLE   : r"[._a-zA-Z0-9]*",
+    Operand.LABLE   : r"[._a-zA-Z0-9]+",
 })
 
 STATEMENT = re.compile(
     fr"({LableRule.regex}\s*)?{OpcodeRule.regex}((\s+{OperandRule.regex})*)")
 LABLE_ONLY = re.compile(LableRule.regex)
+# print(STATEMENT)
 
 
 class Token():

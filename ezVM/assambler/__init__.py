@@ -2,14 +2,12 @@ import re
 from enum import StrEnum
 from enum import auto
 import warnings
-from .syntax import STATEMENT
-from .syntax import LABLE_ONLY
+from .syntax import STATEMENT, LABLE_ONLY
 from .syntax import Statement
 from .syntax import Token
-from .syntax import Lable
-from .syntax import Opcode
-from .syntax import Operand
+from .syntax import Lable, Opcode, Operand
 from .syntax import OpcodeDef
+import math
 
 
 class Section(StrEnum):
@@ -58,8 +56,10 @@ class Assambler():
         if stmt and stmt.end() > len(line)-1:
             lable = Token.makeLable(stmt.group(2))
             opcode = Token.makeOpcode(stmt.group(3))
-            for i in re.split(r"\s+", stmt.group(4))[1:]:
-                operands.append(Token.makeOperand(i))
+            for i in re.split(r"\s+", stmt.group(4)):
+                operand = Token.makeOperand(i)
+                if operand:
+                    operands.append(operand)
         
         elif lable_only and lable_only.end() > len(line)-1:
             lable = Token.makeLable(lable_only.group())
@@ -77,6 +77,7 @@ class Assambler():
             self.parse_lable(lable)
         if opcode:
             code = self.parse_opcode(opcode, operands)
+            print(code)
             match self.cur_section:
                 case Section.CONST:
                     self.constpool += code
@@ -101,27 +102,36 @@ class Assambler():
         match opdef.name:
             case Opcode.CONST:
                 constID = operands[0]
-                match constID.type:
-                    case Operand.INT:
-                        code += int(constID.literal).to_bytes(2)
-                    case Operand.HEX:
-                        code += int(constID.literal[2:], 16).to_bytes(2)
-                    case _:
-                        ...
+                code += self.get_operand_value(constID).to_bytes(2)
             # pseudoinstruction
             case Opcode.INT:
                 value = operands[0]
-                match value.type:
-                    case Operand.INT:
-                        v = int(value.literal)
-                    case Operand.HEX:
-                        v = int(value.literal, 16)
-                    case _:
-                        v = 0
-                length = v.bit_count() // 4 + 1
+                v = self.get_operand_value(value)
+                length = math.ceil(v.bit_length() / 8)
                 code += length.to_bytes(1)
                 code += v.to_bytes(length)
+            case Opcode.STRING:
+                value = operands[0]
+                v = self.get_operand_value(value)
+                length = math.ceil(v.bit_length() / 8)
+                code += length.to_bytes(2)
+                code += v.to_bytes(length)
         return code
+
+    def get_operand_value(self, operand: Token) -> int:
+        literal = operand.literal
+        match operand.type:
+            case Operand.INT:
+                return int(literal)
+            case Operand.HEX:
+                return int(literal, 16)
+            case Operand.STRING:
+                return int(literal[1:-1].encode('utf-8').hex(), 16)
+            case Operand.LABLE:
+                lable_line = self.symbols.get(literal)
+                if not lable_line:
+                    raise SyntaxError(f"no such lable: {literal}")
+                return lable_line
 
     def get_fileheader(self) -> bytes:
         return (self.MAGIC

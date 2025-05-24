@@ -14,7 +14,7 @@ cmake ..; make
 
 编译一个简单的程序并执行
 ```
-python3 assembler.py example/hello -o hello
+python3 -m assembler example/hello.asm -o hello
 ./build/bin/ezVM hello
 ```
 
@@ -31,7 +31,7 @@ python3 assembler.py example/hello -o hello
 ## 指令支持
 
 ```
-0x00                ;不执行任何操作
+0x00 NOP            ;不执行任何操作
 0x01 CONST n(2b)    ;从常量池中取出一个常量入栈, n为常量池元素编号
 0x02 ADD            ;栈上加法
 0x03 POP            ;弹出栈顶元素
@@ -45,8 +45,8 @@ python3 assembler.py example/hello -o hello
 0x0B GT             ;栈上大于运算
 0x0C MINUS          ;栈上取负
 0x0D BANG           ;栈上取非
-0x0E JUMP n(2b)     ;无条件跳转
-0x0F JNT  n(2b)     ;当栈顶不为真或空时跳转
+0x0E JMP n(2b)      ;无条件跳转
+0x0F JNT n(2b)      ;当栈顶不为真或空时跳转
 0x10 NONE           ;将None常量入栈
 0x11 GET n(2b)      ;从全局存储取出数据入栈
 0x12 SET n(2b)      ;将栈顶元素绑定到全局存储
@@ -68,6 +68,7 @@ python3 assembler.py example/hello -o hello
 0x00                ;空数据
 0x01 INT l(1b) n(lb);整型数据
 0x02 STR l(2b) m(lb);字符串数据, l指示了该字符串的长度
+0x03 FUNC n(4b) m(1b);函数数据, n指示了函数地址, m指示了入参数量
 0xFF CUSTOM         ;自定义类型
 ```
 
